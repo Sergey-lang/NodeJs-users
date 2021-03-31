@@ -4,7 +4,7 @@ const getUsers = () => {
     return readJsonFromFile('db.json')
 }
 
-const addUser = async (name) => {
+const addUser = async (name: string) => {
     let users = await getUsers()
     users.push({name, id: 3})
     return writeJsonToFile('db.json', users)
