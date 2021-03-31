@@ -1,38 +1,42 @@
-let {getUsers, addUser} = require('./repository')
-import express from 'express';
+import express, {Request, Response} from 'express';
+
+let {getUsers, addUser, updateUser, deleteUser, getUser} = require('./repository')
 
 const router = express.Router()
 
-export type UserType = {
-    id: number
-    name: string
-}
-
 //app settings
-router.get('/', async (req, res) => {
-    let users = await getUsers()
+router.get('/', async (req: Request, res: Response) => {
+    const users = await getUsers(req.query.search)
 
-    if (!!req.query.search) {
-        users = users.filter((u: any) => u.name.indexOf(req.query.search) > -1)
-    }
     res.send(users)
 })
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req: Request, res: Response) => {
     const userId = req.params.id
-    const users = await getUsers()
-    const user = users.find((u: any) => u.id === userId)
-    if (user) {
-        res.send(user)
-    } else {
-        res.sendStatus(404)
-    }
-    res.send(users)
+    const user = await getUser(userId)
+
+    res.send(user)
 })
 
-router.post('/', async (req, res) => {
+router.post('/', async (req: Request, res: Response) => {
     const name = req.body.name
     await addUser(name)
+
+    res.send({success: true})
+})
+
+router.put('/', async (req: Request, res: Response) => {
+    const name = req.body.name
+    const id = req.body.id
+    await updateUser(id, name)
+
+    res.send({success: true})
+})
+
+router.delete('/:id', async (req: Request, res: Response) => {
+    const userId = req.body.id
+    await deleteUser(userId)
+
     res.send({success: true})
 })
 
